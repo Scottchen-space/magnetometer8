@@ -1,3 +1,3 @@
 # magnetometer8
 
-[text](https://hackmd.io/@tfQCVhPfQrCbJhCjjQOGaA/H1iC4IBzGg)
+[hackMD連結](https://hackmd.io/@tfQCVhPfQrCbJhCjjQOGaA/H1iC4IBzGg)
