@@ -1,12 +1,11 @@
 import serial
 import time
 
-COM_PORT = 'COM3' # 記得確認你的 COM Port
-BAUD_RATE = 115200
+COM_PORT = 'COM7' # 如果你的 COM Port 改變了請改這裡
+BAUD_RATE = 9600  # 必須與 ESP32 端的 Serial2 完全一致
 
 filename = f"MAG_DATA_{time.strftime('%Y%m%d_%H%M%S')}.txt"
 
-# 預先在 Python 裡把 Header 寫好 (使用多行字串包裝)
 NASA_HEADER = """=========================================
                MAGNETOMETER              
 =========================================
@@ -18,32 +17,29 @@ TIME_MS           X         Y          Z
 """
 
 try:
+    # 建立連線
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
     print(f"✅ 連線成功！正在將數據寫入 {filename}")
     print(f"🛑 按下鍵盤 Ctrl + C 停止記錄\n")
 
-    # 開啟 txt 檔案準備寫入
     with open(filename, 'w', encoding='utf-8') as f:
-        
-        # 1. 檔案一打開，Python 先自己把 Header 寫進 txt 檔，並印在螢幕上
         f.write(NASA_HEADER)
         print(NASA_HEADER, end="") 
         
-        # 2. 開始進入無限迴圈，接 ESP32 丟過來的純數字
         while True:
             if ser.in_waiting > 0:
-                line = ser.readline().decode('utf-8', errors='ignore').rstrip()
+                # 讀取並解碼，忽略無法解析的亂碼
+                line = ser.readline().decode('utf-8', errors='ignore').strip()
                 
-                # 如果讀到空行或亂碼就跳過
                 if not line:
                     continue
                     
-                print(line)          # 顯示在螢幕上
-                f.write(line + '\n') # 寫進檔案裡
-                f.flush()            # 強制存檔
+                print(line)          
+                f.write(line + '\n') 
+                f.flush()            
 
 except serial.SerialException:
-    print(f"\nerror!")
+    print(f"\n❌ 錯誤：無法開啟 {COM_PORT}，請檢查藍牙是否連線或 COM Port 數字是否正確！")
 except KeyboardInterrupt:
     print(f"\n🛑 記錄結束，檔案已安全儲存。")
 finally:
