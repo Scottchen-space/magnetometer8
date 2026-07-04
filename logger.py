@@ -1,7 +1,7 @@
 import serial
 import time
 
-COM_PORT = 'COM7' # 如果你的 COM Port 改變了請改這裡
+COM_PORT = 'COM10' # 如果你的 COM Port 改變了請改這裡
 BAUD_RATE = 9600  # 必須與 ESP32 端的 Serial2 完全一致
 
 filename = f"MAG_DATA_{time.strftime('%Y%m%d_%H%M%S')}.txt"

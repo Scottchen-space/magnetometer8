@@ -3,8 +3,8 @@
 
 // 定義腳位
 // TXRX要交叉對接!!!
-#define HC05_RX 27 
-#define HC05_TX 26 
+#define HC12_RX 27 
+#define HC12_TX 26 
 
 QMC5883LCompass compass1;
 
@@ -12,7 +12,7 @@ void setup() {
   Serial.begin(115200);
   
   // 強制使用 9600 鮑率，這是 HC-05 通訊模式的絕對標準值
-  Serial2.begin(9600, SERIAL_8N1, HC05_RX, HC05_TX);  
+  Serial2.begin(9600, SERIAL_8N1, HC12_RX, HC12_TX);  
 
   Wire.begin(21, 22);
   compass1.init();
