@@ -1,3 +1,8 @@
+/*
+ *scanning IIC device address 
+ *esp32 keeping calling address 
+ *if address match IIC device reply and record the address
+*/
 #include <Wire.h>
 #define TCAADDR 0x70
 
@@ -11,11 +16,11 @@ void tcaSelect(uint8_t bus) {
 void setup() {
   Serial.begin(115200);
   Wire.begin(21, 22);
-  Serial.println("\n--- 🚀 開始掃描 TCA9548A 所有通道 ---");
+  Serial.println("\n--- scanning IIC channel ---");
 
-  for (uint8_t t = 0; t < 4; t++) {
+  for (uint8_t t = 0; t < 8; t++) {
     tcaSelect(t);
-    Serial.printf("通道 CH%d: ", t);
+    Serial.printf("channel CH%d: ", t);
 
     bool found = false;
     for (uint8_t addr = 1; addr < 127; addr++) {
@@ -23,14 +28,14 @@ void setup() {
 
       Wire.beginTransmission(addr);
       if (Wire.endTransmission() == 0) {
-        Serial.printf("找到裝置 [0x%02X]  ", addr);
+        Serial.printf("find device address [0x%02X]  ", addr);
         found = true;
       }
     }
-    if (!found) Serial.print("未偵測到任何 I2C 裝置");
+    if (!found) Serial.print("no IIC device found ");
     Serial.println();
   }
-  Serial.println("--- 掃描結束 ---\n");
+  Serial.println("--- end ---\n");
 }
 
 void loop() {}
