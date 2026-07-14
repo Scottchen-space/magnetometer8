@@ -5,7 +5,7 @@ import sys
 # === 遙測通訊參數設定 ===
 COM_PORT = 'COM3'      # 依你電腦實際連接 HC-12 轉接板的 COM Port 修改
 BAUD_RATE = 9600        # 必須與 ESP32 端的 Serial2 完全一致
-SENSOR_COUNT = 4        # 感測器數量 (對應 CH0 ~ CH3)
+SENSOR_COUNT = 8        # 感測器數量 (對應 CH0 ~ CH7)
 
 # 產生這回任務的共用時間戳記，確保所有檔案都有相同的建檔時間標記
 mission_time = time.strftime('%Y%m%d_%H%M%S')
@@ -30,6 +30,9 @@ file_handles = []
 try:
     # 1. 建立無線電序列埠連線
     ser = serial.Serial(COM_PORT, BAUD_RATE, timeout=1)
+
+    ser.reset_input_buffer()
+
     print(f"✅ 射頻遙測連線成功 ({COM_PORT} @ {BAUD_RATE} baud)！")
     print(f"🚀 正在為 {SENSOR_COUNT} 顆感測器建立獨立的數據存檔...\n")
 
@@ -51,7 +54,8 @@ try:
         if ser.in_waiting > 0:
             # 讀取一整行封包並解碼，忽略無線電空中雜訊產生的亂碼
             raw_line = ser.readline().decode('utf-8', errors='ignore').strip()
-            
+            raw_line = raw_line.replace('\x00', '').strip()
+
             if not raw_line:
                 continue
 
@@ -59,7 +63,7 @@ try:
             data = raw_line.split(',')
 
             # 💡 步驟二：航太級封包完整性檢查 (Defensive Check)
-            # 正常長度必須是： 1個時間 + (4顆 * 3軸) = 13 個欄位
+            # 正常長度必須是： 1個時間 + (8顆 * 3軸) = 25 個欄位
             expected_length = 1 + (SENSOR_COUNT * 3)
             
             if len(data) == expected_length:
@@ -72,6 +76,10 @@ try:
                     # CH1 (i=1): index 4, 5, 6
                     # CH2 (i=2): index 7, 8, 9
                     # CH3 (i=3): index 10, 11, 12
+                    # CH4 (i=4): index 13, 14, 15
+                    # CH5 (i=5): index 16, 17, 18
+                    # CH6 (i=6): index 19, 20, 21
+                    # CH7 (i=7): index 22, 23, 24
                     idx = 1 + (i * 3)
                     x, y, z = data[idx], data[idx+1], data[idx+2]
 
