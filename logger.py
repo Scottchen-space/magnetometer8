@@ -31,7 +31,7 @@ SENSOR       : QMC5883P (Channel {channel_idx})
 DATA_UNIT    : Gauss
 MISSION_TIME : {mission_time}
 END_OF_HEADER
-PC_TIMESTAMP              ESP32_MS          X          Y          Z
+PC_TIMESTAMP                        X          Y          Z
 ==============================================================================
 """
 
@@ -82,8 +82,6 @@ try:
                 now = datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8)))
                 pc_time = now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3] # timestamp with milliseconds precision on pc
 
-                time_ms = data[0] # timestamp in milliseconds from ESP32
-
                 for i in range(SENSOR_COUNT):
                     # CH0 (i=0): index 1, 2, 3
                     # CH1 (i=1): index 4, 5, 6
@@ -97,7 +95,7 @@ try:
                     x, y, z = data[idx], data[idx+1], data[idx+2]
 
                     # write to file with formatted output
-                    formatted_line = f" {pc_time} | {time_ms:<10} {x:>8} {y:>8} {z:>8}\n"
+                    formatted_line = f" {pc_time} | {x:>13} {y:>8} {z:>8}\n"
                     file_handles[i].write(formatted_line)
                     file_handles[i].flush() 
 
